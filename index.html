@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Travelbot</title>
+	</head>
+	<body>
+		<h1>Travelbot</h1>
+		<form action="">
+			<fieldset class="locationField">
+				<label for="location">Where do you want to go?</label>
+				<input type="text" name="location" id="location" placeholder="" />
+			</fieldset>
+			<fieldset class="numberofPeopleField">
+				<label for="numberOfAdults">How many adults are going?</label>
+				<select name="numberOfAdults" id="numberOfAdults">
+					<option value="1">1</option>
+					<option value="2">2</option>
+					<option value="3">3</option>
+					<option value="4">4</option>
+					<option value="5">5</option>
+					<option value="6">6</option>
+					<option value="7+">7+</option>
+				</select>
+				<label for="numberofChildren">How many children are going? </label>
+				<select name="numberofChildren" id="numberofChildren">
+					<option value="1">1</option>
+					<option value="2">2</option>
+					<option value="3">3</option>
+					<option value="4">4</option>
+				</select>
+			</fieldset>
+			<fieldset class="howlongField">
+				<label for="numberOfDays">How many days are you going for?</label>
+				<input type="number" name="date" id="numberOfDays" min="1" max="30" />
+			</fieldset>
+			<button type="Submit">Submit</button>
+		</form>
+		<script src="index.js"></script>
+	</body>
+</html>
