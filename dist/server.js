@@ -1,7 +1,6 @@
 import { Configuration, OpenAIApi } from "openai";
 import { config } from "dotenv";
 import { fileURLToPath } from "url";
-import bodyparser from "body-parser";
 import express from "express";
 import path from "path";
 import cors from "cors";
@@ -13,11 +12,13 @@ const configuration = new Configuration({
     apiKey: process.env.OPENAI_API_KEY,
 });
 const openai = new OpenAIApi(configuration);
-app.use(bodyparser.urlencoded({ extended: true }));
 app.use(cors());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 app.post("/post-form", (req, res) => {
     const formData = req.body;
-    res.send("form submitted!");
+    console.log(req.body);
+    res.send(req.body);
 });
 // async function getGPT3Response() {
 // 	try {

@@ -9,12 +9,12 @@
 	</head>
 	<body>
 		<h1>Travelbot</h1>
-		<form action="">
+		<form class="form">
 			<fieldset class="locationField">
 				<label for="location">Where do you want to go?</label>
-				<input type="text" name="location" id="location" placeholder="" />
+				<input type="text" name="location" id="location" placeholder="Enter location" />
 			</fieldset>
-			<fieldset class="numberofPeopleField">
+			<fieldset class="numberOfPeopleField">
 				<label for="numberOfAdults">How many adults are going?</label>
 				<select name="numberOfAdults" id="numberOfAdults">
 					<option value="1">1</option>
@@ -25,8 +25,8 @@
 					<option value="6">6</option>
 					<option value="7+">7+</option>
 				</select>
-				<label for="numberofChildren">How many children are going? </label>
-				<select name="numberofChildren" id="numberofChildren">
+				<label for="numberOfChildren">How many children are going? </label>
+				<select name="numberOfChildren" id="numberOfChildren">
 					<option value="0">0</option>
 					<option value="1">1</option>
 					<option value="2">2</option>
@@ -35,7 +35,7 @@
 			</fieldset>
 			<fieldset class="howlongField">
 				<label for="numberOfDays">How many days are you going for?</label>
-				<input type="number" name="date" id="numberOfDays" min="1" max="30" />
+				<input type="number" name="numberOfDays" id="numberOfDays" min="1" max="14" />
 			</fieldset>
 			<button type="Submit">Submit</button>
 		</form>

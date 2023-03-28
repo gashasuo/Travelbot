@@ -1,19 +1,20 @@
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 
-console.log("index.js");
+console.log("hello ");
 
-const form = document.querySelector<HTMLFormElement>("form");
+const formEl = document.querySelector<HTMLFormElement>(".form");
 
-form!.addEventListener("submit", async (e) => {
+formEl!.addEventListener("submit", async (e) => {
 	e.preventDefault();
-	const formData = new FormData(form!);
+	const formData = new FormData(formEl as HTMLFormElement);
+	const data = new URLSearchParams(formData as unknown as Record<string, string>);
+
 	try {
-		const response = await axios.post("http://localhost:8000/post-form", formData, {
-			headers: {
-				"Content-Type": "application/x-www-form-urlencoded",
-			},
+		const response = await axios.post("http://localhost:8000/post-form", data, {
+			headers: { Accept: "application/x-www-form-urlencoded" },
 		});
-		console.log(response);
+
+		console.log(data);
 	} catch (error: any) {
 		console.log("error", error);
 	}
