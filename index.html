@@ -5,16 +5,17 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<link rel="shortcut icon" href="#" />
+		<link rel="stylesheet" href="./public/styles.css" />
 		<title>Travelbot</title>
 	</head>
 	<body>
 		<h1>Travelbot</h1>
 		<form class="form">
-			<fieldset class="locationField">
+			<div class="locationField">
 				<label for="location">Where do you want to go?</label>
 				<input type="text" name="location" id="location" placeholder="Enter location" />
-			</fieldset>
-			<fieldset class="numberOfPeopleField">
+			</div>
+			<div class="numberOfPeopleField">
 				<label for="numberOfAdults">How many adults are going?</label>
 				<select name="numberOfAdults" id="numberOfAdults">
 					<option value="1">1</option>
@@ -32,13 +33,15 @@
 					<option value="2">2</option>
 					<option value="3">3</option>
 				</select>
-			</fieldset>
-			<fieldset class="howlongField">
+			</div>
+			<div class="howlongField">
 				<label for="numberOfDays">How many days are you going for?</label>
 				<input type="number" name="numberOfDays" id="numberOfDays" min="1" max="14" />
-			</fieldset>
-			<button type="Submit">Submit</button>
+				<button type="Submit">Submit</button>
+			</div>
 		</form>
+
+		<div class="response"></div>
 		<script src="./dist/bundle.js"></script>
 	</body>
 </html>

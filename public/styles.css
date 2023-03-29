@@ -1,0 +1,27 @@
+* {
+	text-decoration: none;
+	margin: 0;
+	padding: 0;
+}
+
+h1 {
+	color: white;
+	background-color: #e072a4;
+	border-radius: 5px;
+	padding: 10px;
+}
+
+body {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	margin-top: 15px;
+	background-color: #3d3b8e;
+	position: relative;
+}
+
+input,
+label {
+	background-color: #b0e298;
+}
