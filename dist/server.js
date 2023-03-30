@@ -38,7 +38,7 @@ function getGPT3Response(location, numberOfAdults, numberOfChildren, numberOfDay
                 messages: [
                     {
                         role: "user",
-                        content: `Write me an itinerary for ${location}. There will be ${numberOfAdults} adult and ${numberOfChildren} children. We will be there for ${numberOfDays} days.`,
+                        content: `Write me an itinerary for ${location}. There will be ${numberOfAdults} adult and ${numberOfChildren} children. We will be there for ${numberOfDays} days. Please include embedded links to locations and attractions when possible and respond in html format but don't include <html> or <body>`,
                     },
                 ],
             }, {

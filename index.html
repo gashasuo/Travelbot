@@ -6,16 +6,25 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<link rel="shortcut icon" href="#" />
 		<link rel="stylesheet" href="./public/styles.css" />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;700&display=swap"
+			rel="stylesheet"
+		/>
 		<title>Travelbot</title>
 	</head>
 	<body>
 		<h1>Travelbot</h1>
 		<form class="form">
-			<div class="locationField">
+			<div class="step step-1 active">
 				<label for="location">Where do you want to go?</label>
 				<input type="text" name="location" id="location" placeholder="Enter location" />
+				<div class="buttonContainer">
+					<button class="button-next" id="button-right" type="button">Next</button>
+				</div>
 			</div>
-			<div class="numberOfPeopleField">
+			<div class="step step-2">
 				<label for="numberOfAdults">How many adults are going?</label>
 				<select name="numberOfAdults" id="numberOfAdults">
 					<option value="1">1</option>
@@ -31,13 +40,20 @@
 					<option value="0">0</option>
 					<option value="1">1</option>
 					<option value="2">2</option>
-					<option value="3">3</option>
+					<option value="3+">3+</option>
 				</select>
+				<div class="buttonContainer">
+					<button class="button-previous" type="button">Previous</button>
+					<button class="button-next" type="button">Next</button>
+				</div>
 			</div>
-			<div class="howlongField">
+			<div class="step step-3">
 				<label for="numberOfDays">How many days are you going for?</label>
 				<input type="number" name="numberOfDays" id="numberOfDays" min="1" max="14" />
-				<button type="Submit">Submit</button>
+				<div class="buttonContainer">
+					<button class="button-previous" type="button">Previous</button>
+					<button class="button-itinerary" type="Submit">Get Itinerary</button>
+				</div>
 			</div>
 		</form>
 
