@@ -4,6 +4,10 @@ console.log("hello ");
 
 const formEl = document.querySelector<HTMLFormElement>(".form");
 const GPTResponseEl = document.querySelector<HTMLDivElement>(".response");
+const loadingDivEl: HTMLDivElement = document.querySelector(".loading")!;
+const nextButtonEls = document.getElementsByClassName("button-next");
+const previousButtonEls = document.getElementsByClassName("button-previous");
+const itineraryButtonEl: HTMLButtonElement = document.querySelector(".button-itinerary")!;
 
 formEl!.addEventListener("submit", async (e) => {
 	e.preventDefault();
@@ -22,9 +26,9 @@ formEl!.addEventListener("submit", async (e) => {
 				headers: { "Content-Type": "application/json" },
 			}
 		);
-		const ItineraryEl = document.createElement("div");
-		ItineraryEl.innerHTML = response.data;
-		GPTResponseEl!.appendChild(ItineraryEl);
+		GPTResponseEl!.innerHTML = response.data;
+		loadingDivEl.classList.remove("active");
+		GPTResponseEl!.classList.add("active");
 
 		console.log(response.data);
 	} catch (error: any) {
@@ -32,8 +36,7 @@ formEl!.addEventListener("submit", async (e) => {
 	}
 });
 
-const nextButtonEls = document.getElementsByClassName("button-next");
-
+//click "next" button
 Array.prototype.forEach.call(nextButtonEls, function (button: HTMLButtonElement) {
 	button.addEventListener("click", function () {
 		const currentDiv = this.parentNode?.parentNode as Element;
@@ -43,8 +46,7 @@ Array.prototype.forEach.call(nextButtonEls, function (button: HTMLButtonElement)
 	});
 });
 
-const previousButtonEls = document.getElementsByClassName("button-previous");
-
+//click "previous" button
 Array.prototype.forEach.call(previousButtonEls, function (button: HTMLButtonElement) {
 	button.addEventListener("click", function () {
 		const currentDiv = this.parentNode?.parentNode as Element;
@@ -52,4 +54,13 @@ Array.prototype.forEach.call(previousButtonEls, function (button: HTMLButtonElem
 		currentDiv.classList.remove("active");
 		previousDiv?.classList.add("active");
 	});
+});
+
+//click "get itinerary" button
+itineraryButtonEl.addEventListener("click", (event) => {
+	const currentDiv: HTMLElement | null = (event.currentTarget as Element).parentNode
+		?.parentNode as HTMLElement | null;
+	currentDiv?.classList.remove("active");
+	formEl!.classList.remove("active");
+	loadingDivEl.classList.add("active");
 });

@@ -5,41 +5,53 @@
 	font-family: "Ubuntu", sans-serif;
 }
 
-h1 {
-	color: white;
-	background-color: #46b1c9;
-	border-radius: 5px;
-	padding: 10px;
-	position: fixed;
-	top: 0;
-	left: 0;
-	right: 0;
-	text-align: center;
-	font-size: 60px;
-}
-
 body {
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	align-items: center;
 	background-color: #f2e2d2;
 	position: relative;
 	height: 100vh;
 }
 
+h1 {
+	color: white;
+	background-color: #46b1c9;
+	position: sticky;
+	border-radius: 5px;
+	padding: 10px;
+	top: 0;
+	left: 0;
+	right: 0;
+	text-align: center;
+	font-size: 60px;
+	width: 100%;
+	height: 100px;
+	box-sizing: border-box;
+}
+
+.container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	min-height: calc(100% - 100px);
+}
+
 form {
 	display: flex;
 	flex-direction: column;
+	justify-self: center;
 	gap: 50px;
+	width: min-content;
 	background-color: #84c0c6;
 	border-radius: 15px;
 	border: 1px solid black;
+	height: max-content;
 	box-shadow: 0px 10px 21px -4px rgba(0, 0, 0, 0.75);
+	width: 700px;
 }
+
 form > div {
 	display: flex;
 	flex-direction: column;
+	justify-content: center;
 	margin: 15px;
 }
 
@@ -101,6 +113,101 @@ button:hover {
 	right: 0;
 }
 
-.step:not(.active) {
+.step:not(.active),
+.form:not(.active) {
 	display: none;
+}
+
+.loading {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	gap: 100px;
+}
+
+.loading > h2 {
+	font-size: 50px;
+}
+
+.dot-flashing {
+	position: relative;
+	width: 50px;
+	height: 50px;
+	border-radius: 50%;
+	background-color: #9880ff;
+	color: #9880ff;
+	animation: dot-flashing 1s infinite linear alternate;
+	animation-delay: 0.5s;
+}
+.dot-flashing::before,
+.dot-flashing::after {
+	content: "";
+	display: inline-block;
+	position: absolute;
+	top: 0;
+}
+.dot-flashing::before {
+	left: -95px;
+	width: 50px;
+	height: 50px;
+	border-radius: 50%;
+	background-color: #9880ff;
+	color: #9880ff;
+	animation: dot-flashing 1s infinite alternate;
+	animation-delay: 0s;
+}
+.dot-flashing::after {
+	left: 95px;
+	width: 50px;
+	height: 50px;
+	border-radius: 50%;
+	background-color: #9880ff;
+	color: #9880ff;
+	animation: dot-flashing 1s infinite alternate;
+	animation-delay: 1s;
+}
+
+@keyframes dot-flashing {
+	0% {
+		background-color: #9880ff;
+	}
+	50%,
+	100% {
+		background-color: rgba(152, 128, 255, 0.2);
+	}
+}
+
+.response {
+	display: flex;
+	flex-direction: column;
+	width: 900px;
+	text-align: left;
+	font-size: 20px;
+	padding-top: 25px;
+	padding-bottom: 100px;
+}
+
+.response h2,
+h3 {
+	text-align: center;
+	margin: 25px;
+}
+
+.response h2 {
+	font-size: 40px;
+	text-align: center;
+}
+
+.response h3 {
+	font-size: 25px;
+}
+
+.response ul {
+	margin-left: 25px;
+}
+
+.response li {
+	margin: 10px;
+	list-style-position: inside;
 }

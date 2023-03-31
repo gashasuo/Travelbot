@@ -16,48 +16,55 @@
 	</head>
 	<body>
 		<h1>Travelbot</h1>
-		<form class="form">
-			<div class="step step-1 active">
-				<label for="location">Where do you want to go?</label>
-				<input type="text" name="location" id="location" placeholder="Enter location" />
-				<div class="buttonContainer">
-					<button class="button-next" id="button-right" type="button">Next</button>
+		<div class="container">
+			<form class="form active">
+				<div class="step step-1 active">
+					<label for="location">What city do you want to go to?</label>
+					<input type="text" name="location" id="location" placeholder="Tokyo" />
+					<div class="buttonContainer">
+						<button class="button-next" id="button-right" type="button">Next</button>
+					</div>
 				</div>
-			</div>
-			<div class="step step-2">
-				<label for="numberOfAdults">How many adults are going?</label>
-				<select name="numberOfAdults" id="numberOfAdults">
-					<option value="1">1</option>
-					<option value="2">2</option>
-					<option value="3">3</option>
-					<option value="4">4</option>
-					<option value="5">5</option>
-					<option value="6">6</option>
-					<option value="7+">7+</option>
-				</select>
-				<label for="numberOfChildren">How many children are going? </label>
-				<select name="numberOfChildren" id="numberOfChildren">
-					<option value="0">0</option>
-					<option value="1">1</option>
-					<option value="2">2</option>
-					<option value="3+">3+</option>
-				</select>
-				<div class="buttonContainer">
-					<button class="button-previous" type="button">Previous</button>
-					<button class="button-next" type="button">Next</button>
+				<div class="step step-2">
+					<label for="numberOfAdults">How many adults are going?</label>
+					<select name="numberOfAdults" id="numberOfAdults">
+						<option value="1">1</option>
+						<option value="2">2</option>
+						<option value="3">3</option>
+						<option value="4">4</option>
+						<option value="5">5</option>
+						<option value="6">6</option>
+						<option value="7+">7+</option>
+					</select>
+					<label for="numberOfChildren">How many children are going? </label>
+					<select name="numberOfChildren" id="numberOfChildren">
+						<option value="0">0</option>
+						<option value="1">1</option>
+						<option value="2">2</option>
+						<option value="3+">3+</option>
+					</select>
+					<div class="buttonContainer">
+						<button class="button-previous" type="button">Previous</button>
+						<button class="button-next" type="button">Next</button>
+					</div>
 				</div>
-			</div>
-			<div class="step step-3">
-				<label for="numberOfDays">How many days are you going for?</label>
-				<input type="number" name="numberOfDays" id="numberOfDays" min="1" max="14" />
-				<div class="buttonContainer">
-					<button class="button-previous" type="button">Previous</button>
-					<button class="button-itinerary" type="Submit">Get Itinerary</button>
+				<div class="step step-3">
+					<label for="numberOfDays">How many days are you going for?</label>
+					<input type="number" name="numberOfDays" id="numberOfDays" min="1" max="14" />
+					<div class="buttonContainer">
+						<button class="button-previous" type="button">Previous</button>
+						<button class="button-itinerary" type="Submit">Get Itinerary</button>
+					</div>
 				</div>
-			</div>
-		</form>
+			</form>
 
-		<div class="response"></div>
+			<div class="step loading">
+				<h2>Generating your itinerary</h2>
+				<div class="dot-flashing"></div>
+			</div>
+
+			<div class="step response"></div>
+		</div>
 		<script src="./dist/bundle.js"></script>
 	</body>
 </html>
