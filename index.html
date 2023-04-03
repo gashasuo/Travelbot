@@ -15,7 +15,7 @@
 		<title>Travelbot</title>
 	</head>
 	<body>
-		<h1>Travelbot</h1>
+		<h1><a href="/">Travelbot</a></h1>
 		<div class="container">
 			<form class="form active">
 				<div class="step step-1 active">
@@ -49,8 +49,15 @@
 					</div>
 				</div>
 				<div class="step step-3">
-					<label for="numberOfDays">How many days are you going for?</label>
-					<input type="number" name="numberOfDays" id="numberOfDays" min="1" max="14" />
+					<label for="numberOfDays">How many days are you going for? (max 14 days)</label>
+					<input
+						type="number"
+						name="numberOfDays"
+						id="numberOfDays"
+						min="1"
+						max="14"
+						value="1"
+					/>
 					<div class="buttonContainer">
 						<button class="button-previous" type="button">Previous</button>
 						<button class="button-itinerary" type="Submit">Get Itinerary</button>
@@ -65,6 +72,15 @@
 
 			<div class="step response"></div>
 		</div>
+		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCG_A6mZOzHWOzwwbIqTGt-kju6eHiYRD8&libraries=places"></script>
+		<script>
+			let autocomplete = new google.maps.places.Autocomplete(
+				document.getElementById("location"),
+				{
+					types: ["(cities)"], // Specify the types of places to return
+				}
+			);
+		</script>
 		<script src="./dist/bundle.js"></script>
 	</body>
 </html>
