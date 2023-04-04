@@ -20,7 +20,9 @@
 			<form class="form active">
 				<div class="step step-1 active">
 					<label for="location">What city do you want to go to?</label>
+					<div class="error"></div>
 					<input type="text" name="location" id="location" placeholder="Tokyo" />
+
 					<div class="buttonContainer">
 						<button class="button-next" id="button-right" type="button">Next</button>
 					</div>
@@ -70,7 +72,12 @@
 				<div class="dot-flashing"></div>
 			</div>
 
-			<div class="step response"></div>
+			<div class="step responseContainer">
+				<div class="response"></div>
+				<div class="buttonContainer" id="newItineraryContainer">
+					<button id="button-reset" type="button">Make A Brand New Itinerary</button>
+				</div>
+			</div>
 		</div>
 		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCG_A6mZOzHWOzwwbIqTGt-kju6eHiYRD8&libraries=places"></script>
 		<script>

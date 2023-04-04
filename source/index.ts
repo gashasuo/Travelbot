@@ -4,11 +4,16 @@ import google from "@googlemaps/js-api-loader";
 console.log("hello ");
 
 const formEl = document.querySelector<HTMLFormElement>(".form");
-const GPTResponseEl = document.querySelector<HTMLDivElement>(".response");
+const ResponseEl = document.querySelector<HTMLDivElement>(".response");
+const ResponseContainerEl = document.querySelector<HTMLDivElement>(".responseContainer");
 const loadingDivEl: HTMLDivElement = document.querySelector(".loading")!;
 const nextButtonEls = document.getElementsByClassName("button-next");
 const previousButtonEls = document.getElementsByClassName("button-previous");
 const itineraryButtonEl: HTMLButtonElement = document.querySelector(".button-itinerary")!;
+const buttonResetEl: HTMLButtonElement = document.querySelector("#button-reset")!;
+const stepOneDivEl: HTMLDivElement = document.querySelector(".step-1")!;
+const locationInputEl: HTMLInputElement = document.querySelector("#location")!;
+const errorDivEl: HTMLDivElement = document.querySelector(".error")!;
 
 formEl!.addEventListener("submit", async (e) => {
 	e.preventDefault();
@@ -27,9 +32,9 @@ formEl!.addEventListener("submit", async (e) => {
 				headers: { "Content-Type": "application/json" },
 			}
 		);
-		GPTResponseEl!.innerHTML = response.data;
+		ResponseEl!.innerHTML = response.data;
 		loadingDivEl.classList.remove("active");
-		GPTResponseEl!.classList.add("active");
+		ResponseContainerEl!.classList.add("active");
 
 		console.log(response.data);
 	} catch (error: any) {
@@ -39,7 +44,15 @@ formEl!.addEventListener("submit", async (e) => {
 
 //click "next" button
 Array.prototype.forEach.call(nextButtonEls, function (button: HTMLButtonElement) {
-	button.addEventListener("click", function () {
+	button.addEventListener("click", function (event) {
+		errorDivEl.innerHTML = "";
+		if (locationInputEl.value == "") {
+			event.preventDefault();
+			const h2El: HTMLElement = document.createElement("h2");
+			h2El.textContent = "Please enter a location";
+			errorDivEl.append(h2El);
+			return;
+		}
 		const currentDiv = this.parentNode?.parentNode as Element;
 		const nextDiv = currentDiv.nextElementSibling;
 		currentDiv.classList.remove("active");
@@ -64,4 +77,13 @@ itineraryButtonEl.addEventListener("click", (event) => {
 	currentDiv?.classList.remove("active");
 	formEl!.classList.remove("active");
 	loadingDivEl.classList.add("active");
+});
+
+//click "make new itinerary" button aka reset
+buttonResetEl!.addEventListener("click", () => {
+	formEl?.reset();
+	window.location.href = "/";
+	ResponseContainerEl!.classList.remove("active");
+	formEl?.classList.add("active");
+	stepOneDivEl.classList.add("active");
 });

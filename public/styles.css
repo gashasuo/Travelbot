@@ -15,7 +15,6 @@ h1 {
 	color: white;
 	background-color: #46b1c9;
 	position: sticky;
-	border-radius: 5px;
 	padding: 10px;
 	top: 0;
 	left: 0;
@@ -31,6 +30,18 @@ h1 > a {
 	color: white;
 }
 
+.error {
+	color: red;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	letter-spacing: 2px;
+}
+
+.error:empty {
+	display: none;
+}
+
 .container {
 	display: flex;
 	justify-content: center;
@@ -44,7 +55,7 @@ form {
 	justify-self: center;
 	gap: 50px;
 	width: min-content;
-	background-color: #84c0c6;
+	background-color: #46b1c9;
 	border-radius: 15px;
 	border: 1px solid black;
 	height: max-content;
@@ -101,9 +112,18 @@ button:hover {
 	cursor: pointer;
 }
 
-.button-itinerary:hover {
+.button-itinerary:hover,
+#button-reset:hover {
 	background-color: #46b1c9;
 	color: white;
+}
+
+#newItineraryContainer {
+	justify-content: center;
+}
+
+#button-reset {
+	border: 1px solid black;
 }
 
 @media all and (max-width: 30em) {
@@ -183,7 +203,7 @@ button:hover {
 	}
 }
 
-.response {
+.responseContainer {
 	display: flex;
 	flex-direction: column;
 	width: 900px;
