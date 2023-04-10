@@ -15,19 +15,34 @@
 		<title>Travelbot</title>
 	</head>
 	<body>
-		<h1><a href="/">Travelbot</a></h1>
+		<!-- navbar  -->
+		<div class="navbar">
+			<a id="title" href="/">Travelbot</a>
+			<div class="userAuthContainer">
+				<button id="navbar-login" type="button">Login</button>
+				<button id="navbar-register" type="button">Register</button>
+			</div>
+		</div>
+
+		<!-- itinerary-form -->
+
 		<div class="container">
-			<form class="form active">
-				<div class="step step-1 active">
+			<form class="itinerary-form active">
+				<button
+					type="submit"
+					onclick="event.preventDefault()"
+					style="display: none"
+				></button>
+				<div class="toggleDiv step-1 active">
 					<label for="location">What city do you want to go to?</label>
 					<div class="error"></div>
 					<input type="text" name="location" id="location" placeholder="Tokyo" />
 
 					<div class="buttonContainer">
-						<button class="button-next" id="button-right" type="button">Next</button>
+						<button class="button-next button-right" type="button">Next</button>
 					</div>
 				</div>
-				<div class="step step-2">
+				<div class="toggleDiv step-2">
 					<label for="numberOfAdults">How many adults are going?</label>
 					<select name="numberOfAdults" id="numberOfAdults">
 						<option value="1">1</option>
@@ -50,7 +65,7 @@
 						<button class="button-next" type="button">Next</button>
 					</div>
 				</div>
-				<div class="step step-3">
+				<div class="toggleDiv step-3">
 					<label for="numberOfDays">How many days are you going for? (max 14 days)</label>
 					<input
 						type="number"
@@ -62,17 +77,80 @@
 					/>
 					<div class="buttonContainer">
 						<button class="button-previous" type="button">Previous</button>
-						<button class="button-itinerary" type="Submit">Get Itinerary</button>
+						<button class="button-blue button-itinerary" type="Submit">
+							Get Itinerary
+						</button>
 					</div>
 				</div>
 			</form>
 
-			<div class="step loading">
+			<!-- login  -->
+			<div class="loginContainer toggleDiv">
+				<form class="login-form" action="/login" method="POST">
+					<div>
+						<label for="username">Username</label>
+						<input
+							type="text"
+							name="username"
+							placeholder="Enter Your Username"
+							required
+						/>
+					</div>
+					<div>
+						<label for="password">Password</label>
+						<input
+							required
+							class="passwordInput"
+							type="password"
+							name="password"
+							placeholder="Enter Your Password"
+						/>
+					</div>
+					<div class="buttonContainer">
+						<button class="button-blue button-right">Login</button>
+					</div>
+				</form>
+			</div>
+
+			<!-- register  -->
+			<div class="registerContainer toggleDiv">
+				<form class="register-form" action="/register" method="POST">
+					<div>
+						<label for="username">Username</label>
+						<input
+							required
+							type="text"
+							name="username"
+							placeholder="Enter Your Username"
+						/>
+					</div>
+					<div>
+						<label for="email">Email</label>
+						<input required type="email" name="email" placeholder="Enter Your Email" />
+					</div>
+					<div>
+						<label for="password">Password</label>
+						<input
+							required
+							type="password"
+							name="password"
+							placeholder="Enter Your Password"
+						/>
+					</div>
+					<div class="buttonContainer">
+						<button class="button-blue button-right">Register</button>
+					</div>
+				</form>
+			</div>
+
+			<!-- loading screen -->
+			<div class="toggleDiv loading">
 				<h2>Generating your itinerary</h2>
 				<div class="dot-flashing"></div>
 			</div>
 
-			<div class="step responseContainer">
+			<!-- ChatGPT Response page -->
+			<div class="toggleDiv responseContainer">
 				<div class="response"></div>
 				<div class="buttonContainer" id="newItineraryContainer">
 					<button id="button-reset" type="button">Make A Brand New Itinerary</button>

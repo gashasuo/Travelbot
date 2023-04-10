@@ -14,6 +14,12 @@ import { fileURLToPath } from "url";
 import express from "express";
 import path from "path";
 import cors from "cors";
+// import session from "express-session";
+// declare module "express-session" {
+// 	interface SessionData {
+// 		apiResponse: string;
+// 	}
+// }
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -22,6 +28,14 @@ const configuration = new Configuration({
     apiKey: process.env.OPENAI_API_KEY,
 });
 const openai = new OpenAIApi(configuration);
+// app.use(
+// 	session({
+// 		secret: process.env.EXPRESS_SESSIONS_SECRET!,
+// 		resave: false,
+// 		saveUninitialized: true,
+// 		cookie: { secure: true },
+// 	})
+// );
 app.use(cors());
 app.use(express.json());
 app.post("/post-form", (req, res) => __awaiter(void 0, void 0, void 0, function* () {

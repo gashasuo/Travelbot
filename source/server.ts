@@ -5,6 +5,13 @@ import { fileURLToPath } from "url";
 import express from "express";
 import path from "path";
 import cors from "cors";
+// import session from "express-session";
+
+// declare module "express-session" {
+// 	interface SessionData {
+// 		apiResponse: string;
+// 	}
+// }
 
 const app = express();
 
@@ -18,6 +25,15 @@ const configuration = new Configuration({
 });
 
 const openai = new OpenAIApi(configuration);
+
+// app.use(
+// 	session({
+// 		secret: process.env.EXPRESS_SESSIONS_SECRET!,
+// 		resave: false,
+// 		saveUninitialized: true,
+// 		cookie: { secure: true },
+// 	})
+// );
 
 app.use(cors());
 app.use(express.json());
