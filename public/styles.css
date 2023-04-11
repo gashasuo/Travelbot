@@ -11,6 +11,7 @@ body {
 	height: 100vh;
 }
 
+/* navbar  */
 .navbar {
 	color: white;
 	background-color: black;
@@ -58,7 +59,7 @@ body {
 	align-items: center;
 	gap: 20px;
 }
-
+/* error messages */
 .error {
 	color: red;
 	display: flex;
@@ -71,6 +72,7 @@ body {
 	display: none;
 }
 
+/* main container */
 .container {
 	display: flex;
 	justify-content: center;
@@ -78,6 +80,12 @@ body {
 	min-height: calc(100% - 100px);
 }
 
+.toggleDiv:not(.active),
+form:not(.active) {
+	display: none;
+}
+
+/* forms */
 form {
 	display: flex;
 	flex-direction: column;
@@ -127,6 +135,7 @@ label {
 	color: white;
 }
 
+/* buttons */
 .buttonContainer {
 	display: flex;
 	justify-content: space-between;
@@ -180,11 +189,7 @@ button:hover {
 	right: 0;
 }
 
-.toggleDiv:not(.active),
-form:not(.active) {
-	display: none;
-}
-
+/* loading page */
 .loading {
 	display: flex;
 	flex-direction: column;
@@ -245,6 +250,7 @@ form:not(.active) {
 	}
 }
 
+/* chatgpt response page */
 .responseContainer {
 	display: flex;
 	flex-direction: column;

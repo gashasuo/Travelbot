@@ -5,6 +5,8 @@ import { fileURLToPath } from "url";
 import express from "express";
 import path from "path";
 import cors from "cors";
+import createPool from "./db.js";
+
 // import session from "express-session";
 
 // declare module "express-session" {
@@ -25,6 +27,22 @@ const configuration = new Configuration({
 });
 
 const openai = new OpenAIApi(configuration);
+
+async function createDBConnectionPool() {
+	const pool = createPool();
+
+	try {
+		const connection = await pool.getConnection();
+
+		console.log("Connected to mySQL database");
+
+		connection.release();
+	} catch (err) {
+		console.error("Error connecting to database:", err);
+	}
+}
+
+createDBConnectionPool();
 
 // app.use(
 // 	session({

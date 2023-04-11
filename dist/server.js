@@ -14,6 +14,7 @@ import { fileURLToPath } from "url";
 import express from "express";
 import path from "path";
 import cors from "cors";
+import createPool from "./db.js";
 // import session from "express-session";
 // declare module "express-session" {
 // 	interface SessionData {
@@ -28,6 +29,20 @@ const configuration = new Configuration({
     apiKey: process.env.OPENAI_API_KEY,
 });
 const openai = new OpenAIApi(configuration);
+function createDBConnectionPool() {
+    return __awaiter(this, void 0, void 0, function* () {
+        const pool = createPool();
+        try {
+            const connection = yield pool.getConnection();
+            console.log("Connected to mySQL database");
+            connection.release();
+        }
+        catch (err) {
+            console.error("Error connecting to database:", err);
+        }
+    });
+}
+createDBConnectionPool();
 // app.use(
 // 	session({
 // 		secret: process.env.EXPRESS_SESSIONS_SECRET!,
