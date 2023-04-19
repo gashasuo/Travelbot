@@ -24,6 +24,10 @@ const containerDivEl = document.querySelector<HTMLDivElement>(".container");
 const registerFormEl = document.querySelector<HTMLFormElement>(".register-form");
 const loginFormEl = document.querySelector<HTMLFormElement>(".login-form");
 const allFormEls: NodeListOf<HTMLFormElement> = document.querySelectorAll("form");
+const userProfileContainerEl = document.querySelector<HTMLDivElement>(
+	".userProfileContainer"
+);
+const userAuthContainerEl = document.querySelector<HTMLDivElement>(".userAuthContainer");
 
 itineraryFormEl!.addEventListener("submit", async (e) => {
 	e.preventDefault();
@@ -48,6 +52,31 @@ itineraryFormEl!.addEventListener("submit", async (e) => {
 
 		console.log(response.data);
 	} catch (error: any) {
+		console.log("error", error);
+	}
+});
+
+registerFormEl!.addEventListener("submit", async (e) => {
+	e.preventDefault();
+	const formData = new FormData(registerFormEl as HTMLFormElement);
+	const data = Object.fromEntries(formData);
+	console.log(data);
+
+	try {
+		const response = await axios.post(
+			"http://localhost:8000/register",
+			JSON.stringify(data),
+			{
+				headers: { "Content-Type": "application/json" },
+			}
+		);
+		console.log(response.data);
+		removeActiveClass();
+		itineraryFormEl?.classList.add("active");
+		stepOneDivEl.classList.add("active");
+		// userAuthContainerEl!.classList.remove("active");
+		// userProfileContainerEl!.classList.add("active");
+	} catch (error) {
 		console.log("error", error);
 	}
 });
@@ -113,7 +142,11 @@ navbarRegisterEl!.addEventListener("click", () => {
 
 function removeActiveClass() {
 	allDivEls.forEach((div) => {
-		div.classList.remove("active");
+		if (div.classList.contains("navbar-div")) {
+			return;
+		} else {
+			div.classList.remove("active");
+		}
 	});
 
 	allFormEls.forEach((form) => {

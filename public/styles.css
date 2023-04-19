@@ -6,7 +6,7 @@
 }
 
 body {
-	background-color: #f2e2d2;
+	background-color: white;
 	position: relative;
 	height: 100vh;
 }
@@ -81,7 +81,8 @@ body {
 }
 
 .toggleDiv:not(.active),
-form:not(.active) {
+form:not(.active),
+.navbar > div:not(.active) {
 	display: none;
 }
 

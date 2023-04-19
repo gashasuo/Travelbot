@@ -18,15 +18,18 @@
 		<!-- navbar  -->
 		<div class="navbar">
 			<a id="title" href="/">Travelbot</a>
-			<div class="userAuthContainer">
+			<div class="userAuthContainer navbar-div active">
 				<button id="navbar-login" type="button">Login</button>
 				<button id="navbar-register" type="button">Register</button>
+			</div>
+			<div class="userProfileContainer navbar-div">
+				<button id="navbar-profile" type="button">Placeholder Username</button>
 			</div>
 		</div>
 
 		<!-- itinerary-form -->
 		<div class="container">
-			<form class="itinerary-form active">
+			<form class="itinerary-form active" method="post" action="/post-form">
 				<button
 					type="submit"
 					onclick="event.preventDefault()"

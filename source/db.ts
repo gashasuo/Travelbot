@@ -8,18 +8,16 @@ const __dirname = path.dirname(__filename);
 
 config({ path: path.join(__dirname, "..", ".env") });
 
-function createPool() {
-	const pool = mysql.createPool({
+async function sqlConnection() {
+	const connection = await mysql.createConnection({
 		host: process.env.DB_HOST,
 		user: process.env.DB_USER,
 		password: process.env.DB_PASSWORD,
-		database: process.env.DATABASE_NAME,
-		waitForConnections: true,
-		connectionLimit: 10,
-		queueLimit: 0,
+		database: process.env.DB_DATABASE_NAME,
 	});
+	console.log("Connected to SQl database");
 
-	return pool;
+	return connection;
 }
 
-export default createPool;
+export default sqlConnection;

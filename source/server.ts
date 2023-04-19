@@ -5,7 +5,7 @@ import { fileURLToPath } from "url";
 import express from "express";
 import path from "path";
 import cors from "cors";
-import createPool from "./db.js";
+import sqlConnection from "./db.js";
 
 // import session from "express-session";
 
@@ -28,21 +28,21 @@ const configuration = new Configuration({
 
 const openai = new OpenAIApi(configuration);
 
-async function createDBConnectionPool() {
-	const pool = createPool();
+const connection = sqlConnection();
 
+async function addUsers(username: string, email: string, password: string) {
 	try {
-		const connection = await pool.getConnection();
-
-		console.log("Connected to mySQL database");
-
-		connection.release();
-	} catch (err) {
-		console.error("Error connecting to database:", err);
+		const connection = await sqlConnection();
+		const [rows, fields] = await connection.execute(
+			"INSERT INTO users (username, email, password) VALUES (?, ?, ?)",
+			[username, email, password]
+		);
+		console.log(rows);
+		connection.end();
+	} catch (error) {
+		console.log(error);
 	}
 }
-
-createDBConnectionPool();
 
 // app.use(
 // 	session({
@@ -66,6 +66,13 @@ app.post("/post-form", async (req, res) => {
 		numberOfDays
 	);
 	res.send(response);
+});
+
+app.post("/register", async (req, res) => {
+	const { username, email, password } = req.body;
+	addUsers(username, email, password);
+	console.log(req.body);
+	res.send(req.body);
 });
 
 async function getGPT3Response(
