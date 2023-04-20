@@ -1,7 +1,5 @@
 import axios, { all } from "axios";
 
-console.log("hello ");
-
 const itineraryFormEl = document.querySelector<HTMLFormElement>(".itinerary-form");
 const ResponseEl = document.querySelector<HTMLDivElement>(".response");
 const ResponseContainerEl = document.querySelector<HTMLDivElement>(".responseContainer");
@@ -28,6 +26,8 @@ const userProfileContainerEl = document.querySelector<HTMLDivElement>(
 	".userProfileContainer"
 );
 const userAuthContainerEl = document.querySelector<HTMLDivElement>(".userAuthContainer");
+const navbarProfileButtonEl =
+	document.querySelector<HTMLButtonElement>("#navbar-profile");
 
 itineraryFormEl!.addEventListener("submit", async (e) => {
 	e.preventDefault();
@@ -74,8 +74,35 @@ registerFormEl!.addEventListener("submit", async (e) => {
 		removeActiveClass();
 		itineraryFormEl?.classList.add("active");
 		stepOneDivEl.classList.add("active");
-		// userAuthContainerEl!.classList.remove("active");
-		// userProfileContainerEl!.classList.add("active");
+		userAuthContainerEl!.classList.remove("active");
+		userProfileContainerEl!.classList.add("active");
+		navbarProfileButtonEl!.innerText = response.data.username;
+	} catch (error) {
+		console.log("error", error);
+	}
+});
+
+loginFormEl!.addEventListener("submit", async (e) => {
+	e.preventDefault();
+	const formData = new FormData(loginFormEl as HTMLFormElement);
+	const data = Object.fromEntries(formData);
+	console.log(data);
+
+	try {
+		const response = await axios.post(
+			"http://localhost:8000/login",
+			JSON.stringify(data),
+			{
+				headers: { "Content-Type": "application/json" },
+			}
+		);
+		console.log(response.data);
+		removeActiveClass();
+		itineraryFormEl?.classList.add("active");
+		stepOneDivEl.classList.add("active");
+		userAuthContainerEl!.classList.remove("active");
+		userProfileContainerEl!.classList.add("active");
+		navbarProfileButtonEl!.innerText = response.data.username;
 	} catch (error) {
 		console.log("error", error);
 	}
