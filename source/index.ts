@@ -10,11 +10,13 @@ const previousButtonEls: NodeListOf<HTMLButtonElement> =
 	document.querySelectorAll(".button-previous");
 const itineraryButtonEl = document.querySelector<HTMLButtonElement>(".button-itinerary")!;
 const buttonResetEl = document.querySelector<HTMLButtonElement>("#button-reset")!;
+const logoEl = document.querySelector<HTMLHeadingElement>("#title");
 const stepOneDivEl = document.querySelector<HTMLDivElement>(".step-1")!;
 const locationInputEl = document.querySelector<HTMLInputElement>("#location")!;
 const errorDivEl = document.querySelector<HTMLDivElement>(".error")!;
 const navbarLoginEl = document.querySelector<HTMLButtonElement>("#navbar-login");
 const navbarRegisterEl = document.querySelector<HTMLButtonElement>("#navbar-register");
+const navbarLogoutEl = document.querySelector<HTMLButtonElement>("#navbar-logout");
 const allDivEls: NodeListOf<HTMLDivElement> = document.querySelectorAll("div");
 const loginContainerEl = document.querySelector<HTMLDivElement>(".loginContainer");
 const registerContainerEl = document.querySelector<HTMLDivElement>(".registerContainer");
@@ -28,6 +30,25 @@ const userProfileContainerEl = document.querySelector<HTMLDivElement>(
 const userAuthContainerEl = document.querySelector<HTMLDivElement>(".userAuthContainer");
 const navbarProfileButtonEl =
 	document.querySelector<HTMLButtonElement>("#navbar-profile");
+
+window.onload = async () => {
+	try {
+		console.log("frontend - onload, before get request");
+		const response = await axios.get("http://localhost:8000/checkSession", {
+			withCredentials: true,
+		});
+		console.log("frontend - onload, after get request");
+		if (response.data) {
+			userAuthContainerEl!.classList.remove("active");
+			userProfileContainerEl!.classList.add("active");
+			navbarProfileButtonEl!.innerText = response.data;
+		} else {
+			console.log("no response from get request");
+		}
+	} catch (error) {
+		console.log("error", error);
+	}
+};
 
 itineraryFormEl!.addEventListener("submit", async (e) => {
 	e.preventDefault();
@@ -93,16 +114,18 @@ loginFormEl!.addEventListener("submit", async (e) => {
 			"http://localhost:8000/login",
 			JSON.stringify(data),
 			{
-				headers: { "Content-Type": "application/json" },
+				headers: {
+					"Access-Control-Allow-Origin": "*",
+					"Content-Type": "application/json",
+				},
 			}
 		);
-		console.log(response.data);
 		removeActiveClass();
 		itineraryFormEl?.classList.add("active");
 		stepOneDivEl.classList.add("active");
 		userAuthContainerEl!.classList.remove("active");
 		userProfileContainerEl!.classList.add("active");
-		navbarProfileButtonEl!.innerText = response.data.username;
+		navbarProfileButtonEl!.innerText = response.data;
 	} catch (error) {
 		console.log("error", error);
 	}
@@ -142,10 +165,17 @@ itineraryButtonEl.addEventListener("click", () => {
 	loadingDivEl.classList.add("active");
 });
 
+//click "logo"
+logoEl!.addEventListener("click", () => {
+	itineraryFormEl!.reset();
+	removeActiveClass();
+	itineraryFormEl?.classList.add("active");
+	stepOneDivEl.classList.add("active");
+});
+
 //click "make new itinerary" button aka reset
 buttonResetEl!.addEventListener("click", () => {
 	itineraryFormEl!.reset();
-	window.location.href = "/";
 	removeActiveClass();
 	itineraryFormEl?.classList.add("active");
 	stepOneDivEl.classList.add("active");
@@ -165,6 +195,24 @@ navbarRegisterEl!.addEventListener("click", () => {
 	removeActiveClass();
 	registerContainerEl?.classList.add("active");
 	registerFormEl?.classList.add("active");
+});
+
+//click "logout" navbar button
+navbarLogoutEl!.addEventListener("click", async () => {
+	try {
+		navbarLogoutEl!.classList.add("button-loading");
+		const response = await axios.post("http://localhost:8000/logout", {
+			headers: { "Content-Type": "application/json" },
+		});
+		console.log(response.data);
+		removeActiveClass();
+		itineraryFormEl?.classList.add("active");
+		stepOneDivEl.classList.add("active");
+		userAuthContainerEl!.classList.add("active");
+		userProfileContainerEl!.classList.remove("active");
+	} catch (error) {
+		console.log("error", error);
+	}
 });
 
 function removeActiveClass() {

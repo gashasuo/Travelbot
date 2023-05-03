@@ -26,13 +26,17 @@ body {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	padding: 30px;
+	padding: 30px 150px;
 }
 
 .navbar #title {
 	color: #46b1c9;
 	font-weight: bold;
 	font-size: 60px;
+}
+
+.navbar #title:hover {
+	cursor: pointer;
 }
 
 .navbar > div {
@@ -48,17 +52,18 @@ body {
 	color: white;
 }
 
-.navbar button:hover,
-.navbar button:active {
+.navbar button:hover {
 	background-color: #46b1c9;
 }
 
-.userAuthContainer {
+.userAuthContainer,
+.userProfileContainer {
 	display: flex;
 	justify-content: flex-end;
 	align-items: center;
 	gap: 20px;
 }
+
 /* error messages */
 .error {
 	color: red;
@@ -162,6 +167,12 @@ button {
 button:hover {
 	border-color: rgba(255, 255, 255, 1);
 	cursor: pointer;
+}
+
+button:active {
+	transform: translateY(2px); /* move the button down */
+	box-shadow: none; /* remove the box shadow */
+	opacity: 0.8; /* reduce the opacity */
 }
 
 .button-blue:hover,

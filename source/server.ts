@@ -2,15 +2,30 @@ import { Configuration, OpenAIApi } from "openai";
 import axios from "axios";
 import { config } from "dotenv";
 import { fileURLToPath } from "url";
-import express from "express";
 import path from "path";
 import cors from "cors";
-import sqlConnection from "./db.js";
+import { sqlConnection, options } from "./db.js";
 import passport from "passport";
-import session from "express-session";
 import bcrypt from "bcrypt";
-import { RowDataPacket } from "mysql2";
+import mysql, { RowDataPacket } from "mysql2/promise";
 import { Strategy as LocalStrategy } from "passport-local";
+import cookieParser from "cookie-parser";
+
+import express from "express";
+import session from "express-session";
+
+import { createRequire } from "module";
+const require = createRequire(import.meta.url);
+
+const MySQLStore = require("express-mysql-session")(session);
+
+declare module "express-session" {
+	interface SessionData {
+		passport: {
+			user: string;
+		};
+	}
+}
 
 const app = express();
 
@@ -25,21 +40,49 @@ const configuration = new Configuration({
 
 const openai = new OpenAIApi(configuration);
 
+const connection = await sqlConnection();
+
+const sessionStore = new MySQLStore({}, connection);
+
 app.use(
 	session({
 		secret: process.env.EXPRESS_SESSIONS_SECRET!,
-		resave: false,
-		saveUninitialized: true,
-		cookie: { secure: true },
+		resave: true,
+		saveUninitialized: false,
+		cookie: { secure: false, maxAge: 8 * 60 * 60 * 1000 },
+		store: sessionStore,
 	})
 );
 
 app.use(cors());
+app.use(cookieParser());
 app.use(express.json());
 app.use(passport.initialize());
 app.use(passport.session());
 
-const connection = sqlConnection();
+app.use(function (req, res, next) {
+	res.header("Access-Control-Allow-Origin", "http://localhost:3000");
+	res.header(
+		"Access-Control-Allow-Headers",
+		"Origin, X-Requested-With, Content-Type, Accept"
+	);
+	res.header("Access-Control-Allow-Credentials", "true");
+	next();
+});
+
+app.use("/checkSession", (req, res, next) => {
+	try {
+		console.log("isauthenticaed", req.isAuthenticated());
+		if (req.isAuthenticated()) {
+			console.log(req.user);
+			return res.status(200).send(req.user);
+		} else {
+			return res.send("no session");
+		}
+	} catch (error) {
+		console.log("error", error);
+	}
+});
 
 passport.use(
 	new LocalStrategy(
@@ -92,15 +135,19 @@ passport.deserializeUser(async (id: any, done) => {
 });
 
 app.post("/post-form", async (req, res) => {
-	const { location, numberOfAdults, numberOfChildren, numberOfDays } = req.body;
-	console.log(req.body);
-	const response = await getGPT3Response(
-		location,
-		numberOfAdults,
-		numberOfChildren,
-		numberOfDays
-	);
-	res.send(response);
+	try {
+		const { location, numberOfAdults, numberOfChildren, numberOfDays } = req.body;
+		console.log(req.body);
+		const response = await getGPT3Response(
+			location,
+			numberOfAdults,
+			numberOfChildren,
+			numberOfDays
+		);
+		res.send(response);
+	} catch (error) {
+		console.log("error", error);
+	}
 });
 
 app.post("/register", async (req, res) => {
@@ -113,15 +160,39 @@ app.post("/register", async (req, res) => {
 			"INSERT INTO users (username, email, password) VALUES (?, ?, ?)",
 			[username, email, hashedPassword]
 		);
+		res.send(req.body);
 	} catch (error) {
 		console.log(error);
 	}
-
-	res.send(req.body);
 });
 
-app.post("/login", passport.authenticate("local"), (req, res) => {
-	res.send(req.body);
+app.post("/login", passport.authenticate("local"), async (req, res) => {
+	console.log(req.session);
+	console.log("isAuthenticated", req.isAuthenticated());
+	req.session.save();
+	res.send(req.body.username);
+});
+
+app.post("/logout", (req, res) => {
+	try {
+		setTimeout(() => {
+			req.logout((error) => {
+				if (error) {
+					return console.log(error);
+				}
+				req.session.destroy(function (err) {
+					if (err) {
+						return err;
+					}
+					// The response should indicate that the user is no longer authenticated.
+					return res.send({ authenticated: req.isAuthenticated() });
+				});
+			});
+			console.log(req.session);
+		}, 1000);
+	} catch (error) {
+		console.log(error);
+	}
 });
 
 async function getGPT3Response(
