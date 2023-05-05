@@ -1,3 +1,5 @@
+const inProd = process.env.NODE_ENV === "production";
+
 import { Configuration, OpenAIApi } from "openai";
 import axios from "axios";
 import { config } from "dotenv";
@@ -24,6 +26,7 @@ declare module "express-session" {
 		passport: {
 			user: string;
 		};
+		user: string;
 	}
 }
 
@@ -48,41 +51,25 @@ app.use(
 	session({
 		secret: process.env.EXPRESS_SESSIONS_SECRET!,
 		resave: true,
-		saveUninitialized: false,
-		cookie: { secure: false, maxAge: 8 * 60 * 60 * 1000 },
+		saveUninitialized: true,
+		proxy: true,
+		cookie: {
+			sameSite: `${inProd ? "none" : "lax"}`,
+			secure: true,
+			maxAge: 8 * 60 * 60 * 1000,
+		},
 		store: sessionStore,
 	})
 );
 
-app.use(cors());
+const corsConfig = {
+	credentials: true,
+	origin: true,
+};
+
+app.use(cors(corsConfig));
 app.use(cookieParser());
 app.use(express.json());
-app.use(passport.initialize());
-app.use(passport.session());
-
-app.use(function (req, res, next) {
-	res.header("Access-Control-Allow-Origin", "http://localhost:3000");
-	res.header(
-		"Access-Control-Allow-Headers",
-		"Origin, X-Requested-With, Content-Type, Accept"
-	);
-	res.header("Access-Control-Allow-Credentials", "true");
-	next();
-});
-
-app.use("/checkSession", (req, res, next) => {
-	try {
-		console.log("isauthenticaed", req.isAuthenticated());
-		if (req.isAuthenticated()) {
-			console.log(req.user);
-			return res.status(200).send(req.user);
-		} else {
-			return res.send("no session");
-		}
-	} catch (error) {
-		console.log("error", error);
-	}
-});
 
 passport.use(
 	new LocalStrategy(
@@ -128,9 +115,30 @@ passport.deserializeUser(async (id: any, done) => {
 		const connection = await sqlConnection();
 		const [rows] = await connection.execute("SELECT * FROM users WHERE id = ?", [id]);
 		const user = (rows as RowDataPacket[])[0];
-		done(null, user);
+		if (user) {
+			return done(null, user);
+		}
+		return done(null, false);
 	} catch (error) {
 		console.log(error);
+		return done(error, false);
+	}
+});
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.use("/checkSession", (req, res, next) => {
+	try {
+		console.log("isauthenticaed", req.isAuthenticated());
+		if (req.isAuthenticated()) {
+			console.log(req.user);
+			return res.send(req.user);
+		} else {
+			return res.send("no session");
+		}
+	} catch (error) {
+		console.log("error", error);
 	}
 });
 
@@ -138,6 +146,8 @@ app.post("/post-form", async (req, res) => {
 	try {
 		const { location, numberOfAdults, numberOfChildren, numberOfDays } = req.body;
 		console.log(req.body);
+		console.log(req.session);
+		console.log("in post-form isauthenticated", req.isAuthenticated());
 		const response = await getGPT3Response(
 			location,
 			numberOfAdults,
@@ -220,12 +230,22 @@ async function getGPT3Response(
 				},
 			}
 		);
-		console.log(response.data.choices[0].message.content);
-		return response.data.choices[0].message.content;
+		const itineraryContent = response.data.choices[0].message.content;
+
+		return itineraryContent;
 	} catch (error) {
 		console.error(error);
 	}
 }
+
+// async function saveItinerary(){
+
+// 	if()
+// 	const [rows] = await connection.execute(
+// 		"INSERT INTO itineraries (itineraries, numberOfDays, user_id) VALUES (?, ?, ?)",
+// 		[itineraryContent, numberOfDays, , ]
+// 	);
+// }
 
 app.listen(8000, () => {
 	console.log("Listening on port 8000");

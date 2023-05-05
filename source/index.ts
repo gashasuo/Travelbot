@@ -30,25 +30,9 @@ const userProfileContainerEl = document.querySelector<HTMLDivElement>(
 const userAuthContainerEl = document.querySelector<HTMLDivElement>(".userAuthContainer");
 const navbarProfileButtonEl =
 	document.querySelector<HTMLButtonElement>("#navbar-profile");
-
-window.onload = async () => {
-	try {
-		console.log("frontend - onload, before get request");
-		const response = await axios.get("http://localhost:8000/checkSession", {
-			withCredentials: true,
-		});
-		console.log("frontend - onload, after get request");
-		if (response.data) {
-			userAuthContainerEl!.classList.remove("active");
-			userProfileContainerEl!.classList.add("active");
-			navbarProfileButtonEl!.innerText = response.data;
-		} else {
-			console.log("no response from get request");
-		}
-	} catch (error) {
-		console.log("error", error);
-	}
-};
+const savedItinerariesContainerEl = document.querySelector<HTMLDivElement>(
+	".savedItinerariesContainer"
+);
 
 itineraryFormEl!.addEventListener("submit", async (e) => {
 	e.preventDefault();
@@ -64,9 +48,11 @@ itineraryFormEl!.addEventListener("submit", async (e) => {
 			//convert the javascript object to JSON
 			JSON.stringify(data),
 			{
+				withCredentials: true,
 				headers: { "Content-Type": "application/json" },
 			}
 		);
+
 		ResponseEl!.innerHTML = response.data;
 		loadingDivEl.classList.remove("active");
 		ResponseContainerEl!.classList.add("active");
@@ -88,6 +74,7 @@ registerFormEl!.addEventListener("submit", async (e) => {
 			"http://localhost:8000/register",
 			JSON.stringify(data),
 			{
+				withCredentials: true,
 				headers: { "Content-Type": "application/json" },
 			}
 		);
@@ -114,6 +101,7 @@ loginFormEl!.addEventListener("submit", async (e) => {
 			"http://localhost:8000/login",
 			JSON.stringify(data),
 			{
+				withCredentials: true,
 				headers: {
 					"Access-Control-Allow-Origin": "*",
 					"Content-Type": "application/json",
@@ -173,6 +161,12 @@ logoEl!.addEventListener("click", () => {
 	stepOneDivEl.classList.add("active");
 });
 
+//click "profile" button
+navbarProfileButtonEl!.addEventListener("click", () => {
+	removeActiveClass();
+	savedItinerariesContainerEl?.classList.add("active");
+});
+
 //click "make new itinerary" button aka reset
 buttonResetEl!.addEventListener("click", () => {
 	itineraryFormEl!.reset();
@@ -229,3 +223,22 @@ function removeActiveClass() {
 	});
 	containerDivEl?.classList.add("active");
 }
+
+// window.onload = async () => {
+// 		try {
+// 			console.log("frontend - onload, before get request");
+// 			const response = await axios.get("http://localhost:8000/checkSession", {
+// 				withCredentials: true,
+// 			});
+// 			console.log("frontend - onload, after get request");
+// 			if (response.data) {
+// 				userAuthContainerEl!.classList.remove("active");
+// 				userProfileContainerEl!.classList.add("active");
+// 				navbarProfileButtonEl!.innerText = response.data;
+// 			} else {
+// 				console.log("no response from get request");
+// 			}
+// 		} catch (error) {
+// 			console.log("error", error);
+// 		}
+// 	};
