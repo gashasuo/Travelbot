@@ -34,6 +34,25 @@ const savedItinerariesContainerEl = document.querySelector<HTMLDivElement>(
 	".savedItinerariesContainer"
 );
 
+window.onload = async () => {
+	try {
+		console.log("frontend - onload, before get request");
+		const response = await axios.get("http://localhost:8000/checkSession", {
+			withCredentials: true,
+		});
+		console.log("frontend - onload, after get request");
+		if (response.data) {
+			userAuthContainerEl!.classList.remove("active");
+			userProfileContainerEl!.classList.add("active");
+			navbarProfileButtonEl!.innerText = response.data;
+		} else {
+			console.log("no response from get request");
+		}
+	} catch (error) {
+		console.log("error", error);
+	}
+};
+
 itineraryFormEl!.addEventListener("submit", async (e) => {
 	e.preventDefault();
 	//get all the form values in one variable
@@ -119,6 +138,30 @@ loginFormEl!.addEventListener("submit", async (e) => {
 	}
 });
 
+//click "logout" navbar button
+navbarLogoutEl!.addEventListener("click", async () => {
+	try {
+		const response = await axios.post(
+			"http://localhost:8000/logout",
+			{},
+			{
+				withCredentials: true,
+				headers: {
+					"Content-Type": "application/json",
+				},
+			}
+		);
+		console.log(response.data);
+		removeActiveClass();
+		itineraryFormEl?.classList.add("active");
+		stepOneDivEl.classList.add("active");
+		userAuthContainerEl!.classList.add("active");
+		userProfileContainerEl!.classList.remove("active");
+	} catch (error) {
+		console.log("error", error);
+	}
+});
+
 //click "next" button
 nextButtonEls.forEach((button) => {
 	button.addEventListener("click", function (event) {
@@ -191,24 +234,6 @@ navbarRegisterEl!.addEventListener("click", () => {
 	registerFormEl?.classList.add("active");
 });
 
-//click "logout" navbar button
-navbarLogoutEl!.addEventListener("click", async () => {
-	try {
-		navbarLogoutEl!.classList.add("button-loading");
-		const response = await axios.post("http://localhost:8000/logout", {
-			headers: { "Content-Type": "application/json" },
-		});
-		console.log(response.data);
-		removeActiveClass();
-		itineraryFormEl?.classList.add("active");
-		stepOneDivEl.classList.add("active");
-		userAuthContainerEl!.classList.add("active");
-		userProfileContainerEl!.classList.remove("active");
-	} catch (error) {
-		console.log("error", error);
-	}
-});
-
 function removeActiveClass() {
 	allDivEls.forEach((div) => {
 		if (div.classList.contains("navbar-div")) {
@@ -223,22 +248,3 @@ function removeActiveClass() {
 	});
 	containerDivEl?.classList.add("active");
 }
-
-// window.onload = async () => {
-// 		try {
-// 			console.log("frontend - onload, before get request");
-// 			const response = await axios.get("http://localhost:8000/checkSession", {
-// 				withCredentials: true,
-// 			});
-// 			console.log("frontend - onload, after get request");
-// 			if (response.data) {
-// 				userAuthContainerEl!.classList.remove("active");
-// 				userProfileContainerEl!.classList.add("active");
-// 				navbarProfileButtonEl!.innerText = response.data;
-// 			} else {
-// 				console.log("no response from get request");
-// 			}
-// 		} catch (error) {
-// 			console.log("error", error);
-// 		}
-// 	};

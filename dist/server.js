@@ -27,12 +27,11 @@ const connection = await sqlConnection();
 const sessionStore = new MySQLStore({}, connection);
 app.use(session({
     secret: process.env.EXPRESS_SESSIONS_SECRET,
-    resave: true,
-    saveUninitialized: true,
-    proxy: true,
+    resave: false,
+    saveUninitialized: false,
     cookie: {
-        sameSite: `${inProd ? "none" : "lax"}`,
-        secure: true,
+        sameSite: "lax",
+        secure: false,
         maxAge: 8 * 60 * 60 * 1000,
     },
     store: sessionStore,
@@ -66,18 +65,24 @@ passport.use(new LocalStrategy({
         return done(error);
     }
 }));
+//after login, store the user's id to sessions
 passport.serializeUser(async (user, done) => {
+    console.log("called serializeUser");
     done(null, user.id);
 });
+//when you need to grab something from sessions, use the id from sessions to grab the full user object from the database which is saved in req.user
 passport.deserializeUser(async (id, done) => {
     try {
+        console.log("called deserializeuser");
+        // console.log(id);
         const connection = await sqlConnection();
         const [rows] = await connection.execute("SELECT * FROM users WHERE id = ?", [id]);
         const user = rows[0];
+        // console.log("deserialize user", user);
         if (user) {
             return done(null, user);
         }
-        return done(null, false);
+        connection.end();
     }
     catch (error) {
         console.log(error);
@@ -88,19 +93,24 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use("/checkSession", (req, res, next) => {
     try {
-        console.log("isauthenticaed", req.isAuthenticated());
+        console.log("isauthenticated in CheckSession", req.isAuthenticated());
         if (req.isAuthenticated()) {
-            console.log(req.user);
-            return res.send(req.user);
-        }
-        else {
-            return res.send("no session");
+            console.log("req.user", req.user);
+            return res.send(req.user.username.toString());
         }
     }
     catch (error) {
         console.log("error", error);
     }
 });
+// app.use(function (req, res, next) {
+// 	if (!req.isAuthenticated()) {
+// 		res.header("Cache-Control", "private, no-cache, no-store, must-revalidate");
+// 		res.header("Expires", "-1");
+// 		res.header("Pragma", "no-cache");
+// 	}
+// 	next();
+// });
 app.post("/post-form", async (req, res) => {
     try {
         const { location, numberOfAdults, numberOfChildren, numberOfDays } = req.body;
@@ -135,21 +145,12 @@ app.post("/login", passport.authenticate("local"), async (req, res) => {
 });
 app.post("/logout", (req, res) => {
     try {
-        setTimeout(() => {
-            req.logout((error) => {
-                if (error) {
-                    return console.log(error);
-                }
-                req.session.destroy(function (err) {
-                    if (err) {
-                        return err;
-                    }
-                    // The response should indicate that the user is no longer authenticated.
-                    return res.send({ authenticated: req.isAuthenticated() });
-                });
-            });
-            console.log(req.session);
-        }, 1000);
+        req.logOut((err) => {
+            if (err) {
+                return err;
+            }
+            return res.send({ message: "logout", authenticated: req.isAuthenticated() });
+        });
     }
     catch (error) {
         console.log(error);
