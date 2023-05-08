@@ -36,11 +36,9 @@ const savedItinerariesContainerEl = document.querySelector<HTMLDivElement>(
 
 window.onload = async () => {
 	try {
-		console.log("frontend - onload, before get request");
 		const response = await axios.get("http://localhost:8000/checkSession", {
 			withCredentials: true,
 		});
-		console.log("frontend - onload, after get request");
 		if (response.data) {
 			userAuthContainerEl!.classList.remove("active");
 			userProfileContainerEl!.classList.add("active");
@@ -162,6 +160,35 @@ navbarLogoutEl!.addEventListener("click", async () => {
 	}
 });
 
+//click "profile" button
+navbarProfileButtonEl!.addEventListener("click", async () => {
+	try {
+		const response = await axios.get("http://localhost:8000/userItineraries", {
+			withCredentials: true,
+			headers: {
+				"Content-Type": "application/json",
+			},
+		});
+		removeActiveClass();
+		savedItinerariesContainerEl?.classList.add("active");
+		if (response.data.length === 0) {
+			savedItinerariesContainerEl!.innerHTML =
+				"<h1> You don't have any saved itineraries yet! </h1>";
+		} else {
+			const ul = document.createElement("ul");
+			response.data.forEach((itinerary: { numberOfDays: number; location: string }) => {
+				const li = document.createElement("li");
+				li.innerHTML = `${itinerary.numberOfDays} day itinerary for <button>${itinerary.location}</button>`;
+				ul.appendChild(li);
+			});
+			savedItinerariesContainerEl!.innerHTML = "";
+			savedItinerariesContainerEl?.appendChild(ul);
+		}
+	} catch (error) {
+		console.log(error);
+	}
+});
+
 //click "next" button
 nextButtonEls.forEach((button) => {
 	button.addEventListener("click", function (event) {
@@ -202,12 +229,6 @@ logoEl!.addEventListener("click", () => {
 	removeActiveClass();
 	itineraryFormEl?.classList.add("active");
 	stepOneDivEl.classList.add("active");
-});
-
-//click "profile" button
-navbarProfileButtonEl!.addEventListener("click", () => {
-	removeActiveClass();
-	savedItinerariesContainerEl?.classList.add("active");
 });
 
 //click "make new itinerary" button aka reset

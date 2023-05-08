@@ -91,7 +91,7 @@ passport.deserializeUser(async (id, done) => {
 });
 app.use(passport.initialize());
 app.use(passport.session());
-app.use("/checkSession", (req, res, next) => {
+app.use("/checkSession", (req, res) => {
     try {
         console.log("isauthenticated in CheckSession", req.isAuthenticated());
         if (req.isAuthenticated()) {
@@ -103,21 +103,17 @@ app.use("/checkSession", (req, res, next) => {
         console.log("error", error);
     }
 });
-// app.use(function (req, res, next) {
-// 	if (!req.isAuthenticated()) {
-// 		res.header("Cache-Control", "private, no-cache, no-store, must-revalidate");
-// 		res.header("Expires", "-1");
-// 		res.header("Pragma", "no-cache");
-// 	}
-// 	next();
-// });
 app.post("/post-form", async (req, res) => {
     try {
         const { location, numberOfAdults, numberOfChildren, numberOfDays } = req.body;
         console.log(req.body);
-        console.log(req.session);
         console.log("in post-form isauthenticated", req.isAuthenticated());
+        console.log(req.user);
         const response = await getGPT3Response(location, numberOfAdults, numberOfChildren, numberOfDays);
+        if (req.isAuthenticated()) {
+            console.log(req.user);
+            saveItinerary(response, location, numberOfDays, req.user.id);
+        }
         res.send(response);
     }
     catch (error) {
@@ -142,6 +138,21 @@ app.post("/login", passport.authenticate("local"), async (req, res) => {
     console.log("isAuthenticated", req.isAuthenticated());
     req.session.save();
     res.send(req.body.username);
+});
+app.get("/userItineraries", async (req, res) => {
+    try {
+        if (req.isAuthenticated()) {
+            console.log(req.user.id);
+            const connection = await sqlConnection();
+            const [rows] = await connection.execute("SELECT * FROM itineraries WHERE user_id = (?)", [req.user.id]);
+            const itineraries = rows;
+            console.log(itineraries);
+            res.send(itineraries);
+        }
+    }
+    catch (error) {
+        console.log(error);
+    }
 });
 app.post("/logout", (req, res) => {
     try {
@@ -179,13 +190,15 @@ async function getGPT3Response(location, numberOfAdults, numberOfChildren, numbe
         console.error(error);
     }
 }
-// async function saveItinerary(){
-// 	if()
-// 	const [rows] = await connection.execute(
-// 		"INSERT INTO itineraries (itineraries, numberOfDays, user_id) VALUES (?, ?, ?)",
-// 		[itineraryContent, numberOfDays, , ]
-// 	);
-// }
+async function saveItinerary(itinerary, location, numberOfDays, user_id) {
+    try {
+        const [rows] = await connection.execute("INSERT INTO itineraries (itinerary, location, numberOfDays, user_id) VALUES (?, ?, ?, ?)", [itinerary, location, numberOfDays, user_id]);
+        console.log("itinerary saved to database");
+    }
+    catch (error) {
+        console.log(error);
+    }
+}
 app.listen(8000, () => {
     console.log("Listening on port 8000");
 });

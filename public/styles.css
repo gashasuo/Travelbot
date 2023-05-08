@@ -262,8 +262,9 @@ button:active {
 	}
 }
 
-/* chatgpt response page */
-.responseContainer {
+/* chatgpt response pages*/
+.responseContainer,
+.savedItinerariesContainer {
 	display: flex;
 	flex-direction: column;
 	width: 900px;
@@ -271,6 +272,11 @@ button:active {
 	font-size: 20px;
 	padding-top: 25px;
 	padding-bottom: 100px;
+}
+
+.savedItinerariesContainer h1,
+.savedItinerariesContainer h2 {
+	text-align: center;
 }
 
 .response h2,
