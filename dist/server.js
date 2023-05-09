@@ -146,9 +146,24 @@ app.get("/userItineraries", async (req, res) => {
             const connection = await sqlConnection();
             const [rows] = await connection.execute("SELECT * FROM itineraries WHERE user_id = (?)", [req.user.id]);
             const itineraries = rows;
-            console.log(itineraries);
             res.send(itineraries);
         }
+    }
+    catch (error) {
+        console.log(error);
+    }
+});
+app.post("/getSavedItinerary", async (req, res) => {
+    try {
+        if (!req.isAuthenticated()) {
+            return res.send("user not logged in");
+        }
+        const connection = await sqlConnection();
+        const [rows] = await connection.execute("SELECT * FROM itineraries WHERE id = (?)", [
+            req.body.id,
+        ]);
+        console.log([rows]);
+        res.send([rows]);
     }
     catch (error) {
         console.log(error);

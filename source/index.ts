@@ -176,11 +176,37 @@ navbarProfileButtonEl!.addEventListener("click", async () => {
 				"<h1> You don't have any saved itineraries yet! </h1>";
 		} else {
 			const ul = document.createElement("ul");
-			response.data.forEach((itinerary: { numberOfDays: number; location: string }) => {
-				const li = document.createElement("li");
-				li.innerHTML = `${itinerary.numberOfDays} day itinerary for <button>${itinerary.location}</button>`;
-				ul.appendChild(li);
-			});
+			response.data.forEach(
+				(itinerary: { id: number; numberOfDays: number; location: string }) => {
+					const li = document.createElement("li");
+					li.classList.add("itineraryListItem");
+					li.innerHTML = `<button class="itineraryListButton" data-id=${itinerary.id}> ${itinerary.location}</button> - ${itinerary.numberOfDays} day itinerary`;
+					ul.appendChild(li);
+					console.log("button created", `${li.innerHTML}`);
+
+					// attach click event listener to button
+					const button = li.querySelector(".itineraryListButton") as HTMLButtonElement;
+					button.addEventListener("click", async () => {
+						try {
+							console.log("clicked button");
+							const id: number = parseInt(button.dataset.id!);
+							console.log(id);
+							const response = await axios.post(
+								"http://localhost:8000/getSavedItinerary",
+								{ id },
+								{
+									withCredentials: true,
+								}
+							);
+							console.log(response.data);
+							savedItinerariesContainerEl!.innerHTML = response.data[0][0].itinerary;
+						} catch (error) {
+							console.log(error);
+						}
+					});
+				}
+			);
+
 			savedItinerariesContainerEl!.innerHTML = "";
 			savedItinerariesContainerEl?.appendChild(ul);
 		}
@@ -189,6 +215,49 @@ navbarProfileButtonEl!.addEventListener("click", async () => {
 	}
 });
 
+// const itineraryListButtonEls: NodeListOf<HTMLButtonElement> =
+// 	document.querySelectorAll(".itineraryListButton");
+
+// //click on a saved itinerary
+// itineraryListButtonEls.forEach((button) => {
+// 	console.log("button created");
+// 	button.addEventListener("click", () => {
+// 		try {
+// 			console.log("clicked button");
+// 			const id: number = parseInt(button.dataset.id!);
+// 			const response = axios.post("http://localhost:8000/getSavedItinerary", id, {
+// 				withCredentials: true,
+// 				headers: {
+// 					"Content-Type": "application/json",
+// 				},
+// 			});
+// 			console.log(response);
+// 		} catch (error) {
+// 			console.log(error);
+// 		}
+// 	});
+// });
+
+// for (let i = 0; i < buttonEls.length; i++) {
+// 	const button = buttonEls[i];
+// 	if ((button.className = "itineraryListButton")) {
+// 		button.addEventListener("click", () => {
+// 			try {
+// 				console.log("clicked button");
+// 				const id: number = parseInt(button.dataset.id!);
+// 				const response = axios.post("http://localhost:8000/getSavedItinerary", id, {
+// 					withCredentials: true,
+// 					headers: {
+// 						"Content-Type": "application/json",
+// 					},
+// 				});
+// 				console.log(response);
+// 			} catch (error) {
+// 				console.log(error);
+// 			}
+// 		});
+// 	}
+// }
 //click "next" button
 nextButtonEls.forEach((button) => {
 	button.addEventListener("click", function (event) {
