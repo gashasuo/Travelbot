@@ -1,8 +1,8 @@
 import axios, { all } from "axios";
 
 const itineraryFormEl = document.querySelector<HTMLFormElement>(".itinerary-form");
-const ResponseEl = document.querySelector<HTMLDivElement>(".response");
-const ResponseContainerEl = document.querySelector<HTMLDivElement>(".responseContainer");
+const responseEl = document.querySelector<HTMLDivElement>(".response");
+const responseContainerEl = document.querySelector<HTMLDivElement>(".responseContainer");
 const loadingDivEl = document.querySelector<HTMLDivElement>(".loading")!;
 const nextButtonEls: NodeListOf<HTMLButtonElement> =
 	document.querySelectorAll(".button-next");
@@ -34,8 +34,17 @@ const savedItinerariesContainerEl = document.querySelector<HTMLDivElement>(
 	".savedItinerariesContainer"
 );
 
-window.onload = async () => {
+window.addEventListener("DOMContentLoaded", async () => {
 	try {
+		const url = new URL(window.location.href);
+		const path = url.pathname;
+		console.log("path", path);
+		if (path == "/") {
+			history.replaceState("home", "", "home");
+		} else {
+			viewHandler(path);
+		}
+
 		const response = await axios.get("http://localhost:8000/checkSession", {
 			withCredentials: true,
 		});
@@ -49,7 +58,7 @@ window.onload = async () => {
 	} catch (error) {
 		console.log("error", error);
 	}
-};
+});
 
 itineraryFormEl!.addEventListener("submit", async (e) => {
 	e.preventDefault();
@@ -70,9 +79,9 @@ itineraryFormEl!.addEventListener("submit", async (e) => {
 			}
 		);
 
-		ResponseEl!.innerHTML = response.data;
+		responseEl!.innerHTML = response.data;
 		loadingDivEl.classList.remove("active");
-		ResponseContainerEl!.classList.add("active");
+		responseContainerEl!.classList.add("active");
 
 		console.log(response.data);
 	} catch (error: any) {
@@ -161,103 +170,9 @@ navbarLogoutEl!.addEventListener("click", async () => {
 });
 
 //click "profile" button
-navbarProfileButtonEl!.addEventListener("click", async () => {
-	try {
-		const response = await axios.get("http://localhost:8000/userItineraries", {
-			withCredentials: true,
-			headers: {
-				"Content-Type": "application/json",
-			},
-		});
-		removeActiveClass();
-		savedItinerariesContainerEl?.classList.add("active");
-		if (response.data.length === 0) {
-			savedItinerariesContainerEl!.innerHTML =
-				"<h1> You don't have any saved itineraries yet! </h1>";
-		} else {
-			const ul = document.createElement("ul");
-			response.data.forEach(
-				(itinerary: { id: number; numberOfDays: number; location: string }) => {
-					const li = document.createElement("li");
-					li.classList.add("itineraryListItem");
-					li.innerHTML = `<button class="itineraryListButton" data-id=${itinerary.id}> ${itinerary.location}</button> - ${itinerary.numberOfDays} day itinerary`;
-					ul.appendChild(li);
-					console.log("button created", `${li.innerHTML}`);
+navbarProfileButtonEl!.addEventListener("click", showProfile);
 
-					// attach click event listener to button
-					const button = li.querySelector(".itineraryListButton") as HTMLButtonElement;
-					button.addEventListener("click", async () => {
-						try {
-							console.log("clicked button");
-							const id: number = parseInt(button.dataset.id!);
-							console.log(id);
-							const response = await axios.post(
-								"http://localhost:8000/getSavedItinerary",
-								{ id },
-								{
-									withCredentials: true,
-								}
-							);
-							console.log(response.data);
-							savedItinerariesContainerEl!.innerHTML = response.data[0][0].itinerary;
-						} catch (error) {
-							console.log(error);
-						}
-					});
-				}
-			);
-
-			savedItinerariesContainerEl!.innerHTML = "";
-			savedItinerariesContainerEl?.appendChild(ul);
-		}
-	} catch (error) {
-		console.log(error);
-	}
-});
-
-// const itineraryListButtonEls: NodeListOf<HTMLButtonElement> =
-// 	document.querySelectorAll(".itineraryListButton");
-
-// //click on a saved itinerary
-// itineraryListButtonEls.forEach((button) => {
-// 	console.log("button created");
-// 	button.addEventListener("click", () => {
-// 		try {
-// 			console.log("clicked button");
-// 			const id: number = parseInt(button.dataset.id!);
-// 			const response = axios.post("http://localhost:8000/getSavedItinerary", id, {
-// 				withCredentials: true,
-// 				headers: {
-// 					"Content-Type": "application/json",
-// 				},
-// 			});
-// 			console.log(response);
-// 		} catch (error) {
-// 			console.log(error);
-// 		}
-// 	});
-// });
-
-// for (let i = 0; i < buttonEls.length; i++) {
-// 	const button = buttonEls[i];
-// 	if ((button.className = "itineraryListButton")) {
-// 		button.addEventListener("click", () => {
-// 			try {
-// 				console.log("clicked button");
-// 				const id: number = parseInt(button.dataset.id!);
-// 				const response = axios.post("http://localhost:8000/getSavedItinerary", id, {
-// 					withCredentials: true,
-// 					headers: {
-// 						"Content-Type": "application/json",
-// 					},
-// 				});
-// 				console.log(response);
-// 			} catch (error) {
-// 				console.log(error);
-// 			}
-// 		});
-// 	}
-// }
+//
 //click "next" button
 nextButtonEls.forEach((button) => {
 	button.addEventListener("click", function (event) {
@@ -293,12 +208,7 @@ itineraryButtonEl.addEventListener("click", () => {
 });
 
 //click "logo"
-logoEl!.addEventListener("click", () => {
-	itineraryFormEl!.reset();
-	removeActiveClass();
-	itineraryFormEl?.classList.add("active");
-	stepOneDivEl.classList.add("active");
-});
+logoEl!.addEventListener("click", showHome);
 
 //click "make new itinerary" button aka reset
 buttonResetEl!.addEventListener("click", () => {
@@ -309,20 +219,10 @@ buttonResetEl!.addEventListener("click", () => {
 });
 
 //click "login" navbar button
-navbarLoginEl!.addEventListener("click", () => {
-	itineraryFormEl!.reset();
-	removeActiveClass();
-	loginContainerEl?.classList.add("active");
-	loginFormEl?.classList.add("active");
-});
+navbarLoginEl!.addEventListener("click", showLogin);
 
 //click "register" navbar button
-navbarRegisterEl!.addEventListener("click", () => {
-	itineraryFormEl!.reset();
-	removeActiveClass();
-	registerContainerEl?.classList.add("active");
-	registerFormEl?.classList.add("active");
-});
+navbarRegisterEl!.addEventListener("click", showRegister);
 
 function removeActiveClass() {
 	allDivEls.forEach((div) => {
@@ -337,4 +237,183 @@ function removeActiveClass() {
 		form.classList.remove("active");
 	});
 	containerDivEl?.classList.add("active");
+}
+
+let currentState = history.state;
+
+window.addEventListener("popstate", viewHandler);
+
+function viewHandler(e: PopStateEvent | string) {
+	if (e instanceof PopStateEvent) {
+		console.log("popstate activated");
+		console.log("e.state", e.state);
+
+		switch (e.state) {
+			case "login":
+				currentState = "login";
+				showLogin();
+				break;
+			case "register":
+				currentState = "register";
+				showRegister();
+				break;
+			case "profile":
+				currentState = "profile";
+				showProfile();
+				break;
+			default:
+				if (e.state && e.state.startsWith("profile-")) {
+					const button = document.querySelector(
+						`[data-id="${e.state.split("-")[1]}"]`
+					) as HTMLButtonElement;
+					if (button) {
+						currentState = `profile-${button.dataset.id}`;
+						showProfileItems(button);
+					}
+				} else {
+					// Default case: "home"
+					currentState = "home";
+					showHome();
+				}
+				break;
+		}
+	} else {
+		console.log("path url", e);
+		switch (e) {
+			case "/login":
+				currentState = "login";
+				showLogin();
+				break;
+			case "/register":
+				currentState = "register";
+				showRegister();
+				break;
+			case "/profile":
+				currentState = "profile";
+				showProfile();
+				break;
+			default:
+				if (e && e.startsWith("/profile-")) {
+					currentState = "profile";
+					history.replaceState("profile", "", "profile");
+					showProfile();
+				} else {
+					// Default case: "home"
+					console.log("default");
+					history.replaceState("home", "", "home");
+					currentState = "home";
+					showHome();
+
+					break;
+				}
+		}
+	}
+}
+
+function showLogin() {
+	if (currentState !== "login") {
+		history.pushState("login", "", "login");
+		currentState = "login";
+	}
+	console.log("history.state inside showLogin()", history.state);
+
+	itineraryFormEl!.reset();
+	removeActiveClass();
+	loginContainerEl?.classList.add("active");
+	loginFormEl?.classList.add("active");
+}
+
+function showRegister() {
+	if (currentState !== "register") {
+		history.pushState("register", "", "register");
+		currentState = "register";
+	}
+	console.log("history.state inside showRegister()", history.state);
+	itineraryFormEl!.reset();
+	removeActiveClass();
+	registerContainerEl?.classList.add("active");
+	registerFormEl?.classList.add("active");
+}
+
+function showHome() {
+	if (currentState !== "home") {
+		history.pushState("home", "", "home");
+		currentState = "home";
+	}
+	console.log("history.state inside showHome()", history.state);
+
+	itineraryFormEl!.reset();
+	removeActiveClass();
+	itineraryFormEl?.classList.add("active");
+	stepOneDivEl.classList.add("active");
+}
+
+async function showProfile() {
+	try {
+		if (currentState !== "profile") {
+			history.pushState("profile", "", "profile");
+			currentState = "profile";
+		}
+		console.log("history.state inside showProfile()", history.state);
+
+		const response = await axios.get("http://localhost:8000/userItineraries", {
+			withCredentials: true,
+			headers: {
+				"Content-Type": "application/json",
+			},
+		});
+		removeActiveClass();
+		savedItinerariesContainerEl?.classList.add("active");
+		if (response.data.length === 0) {
+			savedItinerariesContainerEl!.innerHTML =
+				"<h1> You don't have any saved itineraries yet! </h1>";
+		} else {
+			const ul = document.createElement("ul");
+			response.data.forEach(
+				(itinerary: { id: number; numberOfDays: number; location: string }) => {
+					const li = document.createElement("li");
+					li.classList.add("itineraryListItem");
+					li.innerHTML = `<button class="itineraryListButton" data-id=${itinerary.id}> ${itinerary.location}</button> - ${itinerary.numberOfDays} day itinerary`;
+					ul.appendChild(li);
+
+					// attach click event listener to button
+					const button = li.querySelector(".itineraryListButton") as HTMLButtonElement;
+					button.addEventListener("click", () => {
+						showProfileItems(button);
+					});
+				}
+			);
+			savedItinerariesContainerEl!.innerHTML = "";
+			savedItinerariesContainerEl?.appendChild(ul);
+		}
+	} catch (error) {
+		console.log(error);
+	}
+}
+
+async function showProfileItems(button: HTMLButtonElement) {
+	try {
+		if (currentState !== `profile-${button.dataset.id}`) {
+			history.pushState(
+				`profile-${button.dataset.id}`,
+				"",
+				`profile-${button.dataset.id}`
+			);
+			currentState = `profile-${button.dataset.id}`;
+		}
+		console.log("history.state inside showProfileItems()", history.state);
+
+		const id: number = parseInt(button.dataset.id!);
+		console.log(id);
+		const response = await axios.post(
+			"http://localhost:8000/getSavedItinerary",
+			{ id },
+			{
+				withCredentials: true,
+			}
+		);
+		savedItinerariesContainerEl!.innerHTML = response.data[0][0].itinerary;
+	} catch (error) {
+		console.log(error);
+	}
 }
