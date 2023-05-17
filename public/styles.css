@@ -302,3 +302,7 @@ h3 {
 	margin: 10px;
 	list-style-position: inside;
 }
+
+.trash-can:hover {
+	cursor: pointer;
+}

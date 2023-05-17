@@ -162,11 +162,21 @@ app.post("/getSavedItinerary", async (req, res) => {
         const [rows] = await connection.execute("SELECT * FROM itineraries WHERE id = (?)", [
             req.body.id,
         ]);
-        console.log([rows]);
         res.send([rows]);
     }
     catch (error) {
         console.log(error);
+    }
+});
+app.post("/deleteSavedItinerary", async (req, res) => {
+    try {
+        console.log(req.body.id);
+        const connection = await sqlConnection();
+        await connection.execute("DELETE FROM itineraries WHERE id = (?)", [req.body.id]);
+        res.send("deleted itinerary");
+    }
+    catch (error) {
+        console.log("error", error);
     }
 });
 app.post("/logout", (req, res) => {

@@ -33,6 +33,7 @@ const navbarProfileButtonEl =
 const savedItinerariesContainerEl = document.querySelector<HTMLDivElement>(
 	".savedItinerariesContainer"
 );
+const trashCanEls: NodeListOf<HTMLElement> = document.querySelectorAll(".trash-can");
 
 window.addEventListener("DOMContentLoaded", async () => {
 	try {
@@ -78,14 +79,13 @@ itineraryFormEl!.addEventListener("submit", async (e) => {
 				headers: { "Content-Type": "application/json" },
 			}
 		);
-
+		removeActiveClass();
 		responseEl!.innerHTML = response.data;
 		loadingDivEl.classList.remove("active");
 		responseContainerEl!.classList.add("active");
-
 		console.log(response.data);
 	} catch (error: any) {
-		console.log("error", error);
+		console.log("Error:", error.message);
 	}
 });
 
@@ -373,7 +373,19 @@ async function showProfile() {
 				(itinerary: { id: number; numberOfDays: number; location: string }) => {
 					const li = document.createElement("li");
 					li.classList.add("itineraryListItem");
-					li.innerHTML = `<button class="itineraryListButton" data-id=${itinerary.id}> ${itinerary.location}</button> - ${itinerary.numberOfDays} day itinerary`;
+					li.innerHTML = `<button class="itineraryListButton" data-id=${itinerary.id}> ${itinerary.location}</button> - ${itinerary.numberOfDays} day itinerary <i class=" fa-solid fa-trash-can trash-can"  data-id=${itinerary.id} ></i>`;
+
+					li.childNodes[2].addEventListener("click", (e) => {
+						const id = (e.target as HTMLElement).getAttribute("data-id")!;
+						console.log(id);
+						console.log("clicked trashcan");
+						deleteSavedItinerary(parseInt(id));
+						const liElement = (e.target as HTMLElement).closest("li");
+						if (liElement) {
+							liElement.remove();
+						}
+					});
+
 					ul.appendChild(li);
 
 					// attach click event listener to button
@@ -389,6 +401,17 @@ async function showProfile() {
 	} catch (error) {
 		console.log(error);
 	}
+}
+
+async function deleteSavedItinerary(id: number) {
+	const response = await axios.post(
+		"http://localhost:8000/deleteSavedItinerary",
+		{ id },
+		{
+			withCredentials: true,
+		}
+	);
+	console.log(response);
 }
 
 async function showProfileItems(button: HTMLButtonElement) {
